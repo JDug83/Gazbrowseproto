@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser</title>
+    <link rel="stylesheet" href="theme-toggle.css" />
+</head>
+<body>
+    <div class="container">
+        <div class="center">
+            <input placeholder="Search google">
+        </div>
+
+        <div class="middle">
+            <input placeholder="Maybe over here?">
+        </div>
+
+        <div class="right">
+            <button id="homeButton">🏠</button>
+            <button id="tabButton">
+                <img src="https://images.unsplash.com/vector-1761061372075-6eebc69c6bb7?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3Dh">
+            </button>
+        </div>
+    </div>
+
+<style>
+body {
+    background-image: url("https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+    min-height: 100vh;
+    margin: 0;
+}
+.center { width: 100%; }
+
+.center input,
+.middle input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #4C8BF5;
+    border-radius: 75px;
+    box-sizing: border-box;
+}
+
+.middle {
+    width: 300px;
+    margin: 450px auto;
+}
+
+.right {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 20;
+    display: flex;
+    gap: 10px;
+}
+.right button {
+    width: 45px;
+    height: 45px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+    background: white;
+}
+.right img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+#homeButton {
+    font-size: 22px;
+    line-height: 45px;
+}
+</style>
+
+<script>
+    const urlInput = document.querySelector(".center input");
+    const googleInput = document.querySelector(".middle input");
+    const mobileButton = document.getElementById("tabButton");
+    const homeButton = document.getElementById("homeButton");
+
+    urlInput.placeholder = "Search Google or enter URL";
+
+    const page = document.createElement("iframe");
+    Object.assign(page.style, {
+        display: "none",
+        position: "fixed",
+        top: "50px",
+        left: "0",
+        width: "100%",
+        height: "calc(100vh - 50px)",
+        border: "none",
+        background: "white",
+        zIndex: "10"
+    });
+    document.body.appendChild(page);
+
+    function searchGoogle(query) {
+        query = query.trim();
+        if (!query) return;
+        googleInput.parentElement.style.display = "none";
+        page.style.display = "block";
+        page.src = "https://www.google.com/search?q=" + encodeURIComponent(query);
+    }
+
+    googleInput.addEventListener("keydown", function(event) {
+        if (event.key === "Enter") searchGoogle(this.value);
+    });
+
+    urlInput.addEventListener("keydown", function(event) {
+        if (event.key !== "Enter") return;
+        const text = this.value.trim();
+        if (!text) return;
+
+        const isUrl = /^(https?:\/\/)?([\w-]+\.)+[a-z]{2,}([/?#].*)?$/i.test(text);
+
+        if (isUrl) {
+            googleInput.parentElement.style.display = "none";
+            page.style.display = "block";
+            page.src = /^https?:\/\//i.test(text) ? text : "https://" + text;
+        } else {
+            searchGoogle(text);
+        }
+    });
+
+    mobileButton.addEventListener("click", function() {
+        console.log("Tab button clicked — tab functionality coming later.");
+    });
+
+    homeButton.addEventListener("click", function() {
+        page.style.display = "none";
+        page.src = "about:blank";
+        googleInput.parentElement.style.display = "";
+        googleInput.value = "";
+        urlInput.value = "";
+    });
+</script>
+</body>
+</html>
